@@ -44,11 +44,11 @@ export function buildMarkdown(map) {
 
 export function downloadText(map) {
   const md = buildMarkdown(map);
-  const blob = new Blob([md], { type: "text/markdown" });
+  const blob = new Blob([md], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${(map.issue || "issue-map").replace(/\s+/g, "-").toLowerCase()}.md`;
+  a.download = `${(map.issue || "issue-map").replace(/\s+/g, "-").toLowerCase()}.txt`;
   a.click();
   URL.revokeObjectURL(url);
 }

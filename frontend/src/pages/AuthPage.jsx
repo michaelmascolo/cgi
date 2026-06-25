@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sprout } from "lucide-react";
+import { Sprout, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth, formatApiError } from "@/context/AuthContext";
 
@@ -12,6 +12,7 @@ export default function AuthPage({ mode }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -64,15 +65,36 @@ export default function AuthPage({ mode }) {
             required
             testId="auth-email-input"
           />
-          <Field
-            label="Password"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="••••••••"
-            required
-            testId="auth-password-input"
-          />
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm font-medium text-[#2D2A26]">Password</span>
+              {isLogin && (
+                <Link to="/forgot-password" className="text-sm text-[#4A5D4E] underline underline-offset-4" data-testid="forgot-password-link">
+                  Forgot password?
+                </Link>
+              )}
+            </div>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                required
+                placeholder="Your password"
+                onChange={(e) => setPassword(e.target.value)}
+                data-testid="auth-password-input"
+                className="w-full rounded-xl border border-[#E8E3D9] bg-white px-4 py-3 pr-12 text-[#2D2A26] placeholder:text-[#A39E94] focus:ring-2 focus:ring-[#4A5D4E] focus:outline-none focus:ring-offset-2 focus:ring-offset-white transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                data-testid="toggle-password-visibility"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6E6860] hover:text-[#2D2A26] transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" strokeWidth={1.5} /> : <Eye className="h-5 w-5" strokeWidth={1.5} />}
+              </button>
+            </div>
+          </div>
 
           {error && (
             <p data-testid="auth-error" className="text-sm text-[#B27A70] bg-[#B27A70]/10 rounded-lg px-3 py-2">

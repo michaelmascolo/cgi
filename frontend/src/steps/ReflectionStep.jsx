@@ -77,7 +77,13 @@ export default function ReflectionStep() {
       </div>
 
       <div className="mt-8 rounded-2xl bg-[#F5F2EA] border border-[#E8E3D9] p-6">
-        <p className="text-sm uppercase tracking-[0.2em] text-[#6E6860] mb-4">Save &amp; export your issue map</p>
+        <p className="text-sm uppercase tracking-[0.2em] text-[#6E6860] mb-1">Save &amp; export your issue map</p>
+        <p className="text-sm text-[#6E6860] mb-4">
+          <span className="font-medium text-[#2D2A26]">Save</span> keeps it in your account under “My Maps”.
+          <span className="font-medium text-[#2D2A26]"> Copy</span> places the text on your clipboard to paste anywhere.
+          <span className="font-medium text-[#2D2A26]"> Download</span> saves a plain text file, and
+          <span className="font-medium text-[#2D2A26]"> PDF</span> saves a formatted document.
+        </p>
         <div className="flex flex-wrap gap-3">
           <button onClick={save} disabled={saving} data-testid="save-map-button" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#4A5D4E] text-[#FDFBF7] font-medium hover:bg-[#3B4A3E] transition-all hover:-translate-y-0.5 disabled:opacity-60">
             <Save className="h-4 w-4" /> {saving ? "Saving…" : "Save"}
@@ -86,7 +92,7 @@ export default function ReflectionStep() {
             <Copy className="h-4 w-4" /> Copy
           </button>
           <button onClick={() => downloadText(map)} data-testid="download-map-button" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-[#E8E3D9] text-[#2D2A26] hover:bg-white/60 transition-all">
-            <Download className="h-4 w-4" /> Markdown
+            <Download className="h-4 w-4" /> Download (text file)
           </button>
           <button onClick={() => exportPdf(map)} data-testid="export-pdf-button" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-[#E8E3D9] text-[#2D2A26] hover:bg-white/60 transition-all">
             <FileText className="h-4 w-4" /> PDF

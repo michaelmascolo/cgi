@@ -54,7 +54,7 @@ export default function PositionMappingStep() {
       </div>
 
       <label className="block text-base font-medium text-[#2D2A26] mb-1.5">
-        What concerns, fears, values, or hopes are behind your position?
+        What needs, concerns, fears, values, hopes or wants are behind your position?
       </label>
       <p className="text-sm text-[#6E6860] mb-3">Not sure? Ask for gentle suggestions below.</p>
       <textarea

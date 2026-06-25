@@ -117,6 +117,15 @@ class LoginInput(BaseModel):
     password: str
 
 
+class ForgotInput(BaseModel):
+    email: EmailStr
+
+
+class ResetInput(BaseModel):
+    token: str
+    password: str = Field(min_length=6)
+
+
 class Solution(BaseModel):
     title: str = ""
     description: str = ""
@@ -227,6 +236,40 @@ async def logout(response: Response, current=Depends(get_current_user)):
 @api_router.get("/auth/me")
 async def me(current=Depends(get_current_user)):
     return current
+
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: ForgotInput):
+    email = data.email.lower()
+    user = await db.users.find_one({"email": email})
+    if not user:
+        # Do not reveal whether an account exists.
+        return {"ok": True, "reset_token": None}
+    token = secrets.token_urlsafe(32)
+    await db.password_reset_tokens.insert_one({
+        "token": token,
+        "user_id": str(user["_id"]),
+        "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+        "used": False,
+    })
+    logger.info(f"Password reset requested for {email}. Reset token: {token}")
+    # No email service configured, so return the token to drive the reset flow in-app.
+    return {"ok": True, "reset_token": token}
+
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: ResetInput):
+    rec = await db.password_reset_tokens.find_one({"token": data.token})
+    if not rec or rec.get("used"):
+        raise HTTPException(status_code=400, detail="This reset link is invalid or has already been used.")
+    exp = rec["expires_at"]
+    if exp.tzinfo is None:
+        exp = exp.replace(tzinfo=timezone.utc)
+    if datetime.now(timezone.utc) > exp:
+        raise HTTPException(status_code=400, detail="This reset link has expired. Please request a new one.")
+    await db.users.update_one({"_id": ObjectId(rec["user_id"])}, {"$set": {"password_hash": hash_password(data.password)}})
+    await db.password_reset_tokens.update_one({"_id": rec["_id"]}, {"$set": {"used": True}})
+    return {"ok": True}
 
 
 @api_router.post("/auth/refresh")
@@ -364,6 +407,7 @@ async def startup():
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
     await db.issue_maps.create_index("user_id")
+    await db.password_reset_tokens.create_index("expires_at", expireAfterSeconds=0)
 
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com")
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")

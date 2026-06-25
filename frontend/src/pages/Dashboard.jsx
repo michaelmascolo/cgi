@@ -78,7 +78,7 @@ export default function Dashboard() {
                     Open <ArrowRight className="h-3.5 w-3.5" />
                   </button>
                   <button onClick={() => { copyMarkdown(m); toast.success("Copied."); }} title="Copy" className="p-2 rounded-full text-[#6E6860] hover:bg-[#F5F2EA] transition-colors"><Copy className="h-4 w-4" /></button>
-                  <button onClick={() => downloadText(m)} title="Markdown" className="p-2 rounded-full text-[#6E6860] hover:bg-[#F5F2EA] transition-colors"><Download className="h-4 w-4" /></button>
+                  <button onClick={() => downloadText(m)} title="Download text file" className="p-2 rounded-full text-[#6E6860] hover:bg-[#F5F2EA] transition-colors"><Download className="h-4 w-4" /></button>
                   <button onClick={() => exportPdf(m)} title="PDF" className="p-2 rounded-full text-[#6E6860] hover:bg-[#F5F2EA] transition-colors"><FileText className="h-4 w-4" /></button>
                   <button onClick={() => remove(m.id)} data-testid={`delete-map-${m.id}`} title="Delete" className="p-2 rounded-full text-[#6E6860] hover:text-[#B27A70] hover:bg-[#F5F2EA] transition-colors"><Trash2 className="h-4 w-4" /></button>
                 </div>
