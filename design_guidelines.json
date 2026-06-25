@@ -1,0 +1,87 @@
+{
+  "theme": "Light",
+  "archetype": "Archetype 1: Organic & Earthy",
+  "typography": {
+    "heading_font": "Spectral, serif",
+    "body_font": "Figtree, sans-serif",
+    "heading_strategy": "Use Spectral for authoritative, calm, and reflective headings. Apply tracking-tight for larger sizes.",
+    "body_strategy": "Use Figtree for clean, highly readable, non-partisan body copy and UI elements.",
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight",
+      "h3": "text-xl sm:text-2xl",
+      "h4": "text-lg sm:text-xl",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm uppercase tracking-[0.2em]"
+    }
+  },
+  "colors": {
+    "background": "#FDFBF7",
+    "surface": "#FFFFFF",
+    "surface_alt": "#F5F2EA",
+    "primary": "#4A5D4E",
+    "primary_hover": "#3B4A3E",
+    "secondary": "#D9C5B2",
+    "text_main": "#2D2A26",
+    "text_muted": "#6E6860",
+    "border": "#E8E3D9",
+    "success": "#6B8E6B",
+    "warning": "#C4A265",
+    "error": "#B27A70",
+    "notes": "Absolutely NO red-vs-blue partisan styling. Rely on warm creams, moss greens, and soft clays to create a civic, calm, and nonpartisan environment."
+  },
+  "layout_spacing": {
+    "strategy": "Generous spacing philosophy (p-8 to p-12 for containers) to enforce a 'slow down and reflect' mindset. Use the Control Room grid for the two-column Needs Identification and bento patterns for Collaborative Solutions.",
+    "container": "max-w-5xl mx-auto px-6 lg:px-8",
+    "wizard_step": "min-h-[60vh] flex flex-col justify-center",
+    "card_padding": "p-6 sm:p-8"
+  },
+  "components": {
+    "buttons": "Rounded-full or softly rounded-lg. Primary buttons use the moss green (#4A5D4E) with white text. Hover states lift slightly (-translate-y-0.5) with a soft shadow.",
+    "inputs": "Shadcn components heavily customized: soft rounded boxes with #FFFFFF backgrounds and #E8E3D9 borders. No harsh black borders.",
+    "cards": "Flat solid surfaces. No glassmorphism (can feel too techy). Subtle 1px border (#E8E3D9) and shadow-sm.",
+    "wizard_progress": "A discrete, text-based or dotted progress indicator at the top (e.g., 'Step 2 of 6: Position Mapping').",
+    "needs_chips": "Small pill-shaped tags. Editable. Background: #F5F2EA, Text: #2D2A26. Close/Edit icon on hover.",
+    "solution_cards": "Bento-style layout inside. Clear sections for 'Needs Met (A)', 'Needs Met (B)', and 'Unmet'."
+  },
+  "motion_interactions": {
+    "page_transitions": "Framer Motion: Fade in and slide up slightly (initial={{ opacity: 0, y: 10 }}, animate={{ opacity: 1, y: 0 }}).",
+    "hover_states": "Soft scaling (scale-105 for chips) and background color shifts.",
+    "loading": "Gentle pulsing of abstract shapes or a slow fade-in, not a generic spinner."
+  },
+  "accessibility": {
+    "contrast": "Ensure APCA/WCAG compliance. Charcoal text (#2D2A26) on cream background provides excellent contrast. Primary button (#4A5D4E) with white text is highly readable.",
+    "testing": "All interactive and key informational elements MUST include a data-testid attribute in kebab-case based on role (e.g., data-testid='start-issue-button', data-testid='need-chip-edit').",
+    "focus": "focus:ring-2 focus:ring-[#4A5D4E] focus:outline-none focus:ring-offset-2 focus:ring-offset-[#FDFBF7]"
+  },
+  "media": {
+    "rules": "Use images to set a calm, grounded mood. Do not use standard tech/corporate illustrations.",
+    "images": [
+      {
+        "category": "Hero Background / Abstract Decorative",
+        "url": "https://images.pexels.com/photos/13551573/pexels-photo-13551573.jpeg",
+        "description": "Abstract design with smooth curves and warm earthy shades, creating a calm artistic appeal."
+      },
+      {
+        "category": "Reflection / Breathing space",
+        "url": "https://images.pexels.com/photos/28531119/pexels-photo-28531119.jpeg",
+        "description": "Serene forest path with sunlight, indicating finding a path forward."
+      },
+      {
+        "category": "About / Collaborative Context",
+        "url": "https://images.pexels.com/photos/8837596/pexels-photo-8837596.jpeg",
+        "description": "Diverse group collaborating at a round table, representing integrative solutions."
+      }
+    ]
+  },
+  "page_specific_instructions": {
+    "Landing": "Large typography. Hero uses the calm abstract background (low opacity, bg-[#FDFBF7]/90 overlay). Centered, spacious. CTA: 'Start a New Issue'.",
+    "Issue_Input": "Clean form. Suggest preloaded examples as soft chips below the input field.",
+    "Position_Mapping": "Two distinct areas (Your Position vs Opposing Position). Neutral, non-judgmental language.",
+    "Needs_Identification": "Two columns side-by-side. Translate positions into underlying needs using editable chips.",
+    "Collaborative_Solutions": "Display 3-5 generated solutions. Detailed card showing what needs from A & B are met.",
+    "Reflection": "A quiet, text-focused form. Ask 'Did this change your understanding?'.",
+    "Save_Export": "Dashboard view. Simple cards for saved issue maps. Actions: Export as PDF, Copy Markdown."
+  },
+  "iconography": "lucide-react for standard UI icons. Keep stroke width thin (1.5) for a refined look."
+}
