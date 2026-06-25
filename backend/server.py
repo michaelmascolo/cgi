@@ -294,6 +294,13 @@ def _serialize_map(doc: dict) -> dict:
     return doc
 
 
+def _oid(map_id: str) -> ObjectId:
+    try:
+        return ObjectId(map_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Issue map not found")
+
+
 @api_router.get("/examples")
 async def get_examples():
     return EXAMPLES
@@ -317,7 +324,7 @@ async def create_map(data: IssueMapInput, current=Depends(get_current_user)):
 
 @api_router.get("/maps/{map_id}")
 async def get_map(map_id: str, current=Depends(get_current_user)):
-    doc = await db.issue_maps.find_one({"_id": ObjectId(map_id), "user_id": current["id"]})
+    doc = await db.issue_maps.find_one({"_id": _oid(map_id), "user_id": current["id"]})
     if not doc:
         raise HTTPException(status_code=404, detail="Issue map not found")
     return _serialize_map(doc)
@@ -328,17 +335,17 @@ async def update_map(map_id: str, data: IssueMapInput, current=Depends(get_curre
     doc = data.model_dump()
     doc["updated_at"] = datetime.now(timezone.utc).isoformat()
     result = await db.issue_maps.update_one(
-        {"_id": ObjectId(map_id), "user_id": current["id"]}, {"$set": doc}
+        {"_id": _oid(map_id), "user_id": current["id"]}, {"$set": doc}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Issue map not found")
-    updated = await db.issue_maps.find_one({"_id": ObjectId(map_id)})
+    updated = await db.issue_maps.find_one({"_id": _oid(map_id)})
     return _serialize_map(updated)
 
 
 @api_router.delete("/maps/{map_id}")
 async def delete_map(map_id: str, current=Depends(get_current_user)):
-    result = await db.issue_maps.delete_one({"_id": ObjectId(map_id), "user_id": current["id"]})
+    result = await db.issue_maps.delete_one({"_id": _oid(map_id), "user_id": current["id"]})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Issue map not found")
     return {"ok": True}
