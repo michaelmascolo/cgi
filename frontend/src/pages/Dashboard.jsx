@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Plus, FileText, Copy, Download, Trash2, ArrowRight, Sparkles } from "lucide-react";
+import { Plus, FileText, Copy, Download, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { api, formatApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -13,21 +13,14 @@ export default function Dashboard() {
   const { reset, loadMap, setStep } = useLab();
   const navigate = useNavigate();
   const [maps, setMaps] = useState(null);
-  const [examples, setExamples] = useState([]);
 
   const load = () => api.get("/maps").then((r) => setMaps(r.data)).catch(() => setMaps([]));
   useEffect(() => {
     load();
-    api.get("/examples").then((r) => setExamples(r.data)).catch(() => {});
   }, []);
 
   const startNew = () => {
     reset();
-    navigate("/lab");
-  };
-
-  const startExample = (ex) => {
-    loadMap({ issue: ex.issue, position_a: ex.position_a, position_b: ex.position_b });
     navigate("/lab");
   };
 
@@ -70,7 +63,7 @@ export default function Dashboard() {
           </div>
         ) : maps.length === 0 ? (
           <div className="rounded-2xl bg-[#F5F2EA] border border-dashed border-[#D9C5B2] p-10 text-center">
-            <p className="text-[#6E6860]">You haven't saved any issue maps yet. Start one above or pick a starter below.</p>
+            <p className="text-[#6E6860]">You haven't saved any issue maps yet. Start one above by naming an issue that matters to you.</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" data-testid="saved-maps-list">
@@ -93,25 +86,6 @@ export default function Dashboard() {
             ))}
           </div>
         )}
-      </section>
-
-      {/* Starter examples */}
-      <section>
-        <h2 className="font-serif text-xl text-[#2D2A26] mb-4">Starter examples</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {examples.map((ex) => (
-            <button key={ex.key} onClick={() => startExample(ex)} data-testid={`starter-${ex.key}`} className="text-left rounded-2xl bg-white border border-[#E8E3D9] p-6 shadow-sm hover:-translate-y-0.5 hover:border-[#D9C5B2] transition-all group">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F2EA] mb-3">
-                <Sparkles className="h-4 w-4 text-[#4A5D4E]" strokeWidth={1.5} />
-              </span>
-              <h3 className="font-serif text-lg text-[#2D2A26] mb-1.5">{ex.issue}</h3>
-              <p className="text-sm text-[#6E6860] line-clamp-2">{ex.position_a}</p>
-              <span className="inline-flex items-center gap-1 text-sm text-[#4A5D4E] mt-3 font-medium">
-                Explore <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </span>
-            </button>
-          ))}
-        </div>
       </section>
     </div>
   );

@@ -1,22 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { api, formatApiError } from "@/lib/api";
 import { useLab } from "@/context/LabContext";
 
+const TOPIC_HINTS = [
+  "Abortion", "Immigration", "Gun violence", "Free speech", "Affirmative action",
+  "Economy", "Climate change", "Education", "Healthcare",
+];
+
 export default function IssueInputStep() {
   const { map, update, setStep } = useLab();
-  const [examples, setExamples] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    api.get("/examples").then((r) => setExamples(r.data)).catch(() => {});
-  }, []);
-
-  const applyExample = (ex) => {
-    update({ issue: ex.issue, position_a: ex.position_a, position_b: ex.position_b, needs_a: [], needs_b: [], solutions: [] });
-  };
 
   const cont = async () => {
     if (!map.issue.trim() || !map.position_a.trim()) {
@@ -43,28 +39,19 @@ export default function IssueInputStep() {
       <h2 className="font-serif text-2xl sm:text-3xl tracking-tight text-[#2D2A26] mb-2">
         What social or political issue would you like to explore?
       </h2>
-      <p className="text-[#6E6860] mb-6">Choose a starter example or write your own.</p>
+      <p className="text-[#6E6860] mb-6">This is your issue to define, in your own words.</p>
 
       <input
         value={map.issue}
         onChange={(e) => update({ issue: e.target.value })}
-        placeholder="e.g. Immigration, Healthcare, Climate change…"
+        placeholder="Name the issue you want to explore…"
         data-testid="issue-input"
         className="w-full rounded-xl border border-[#E8E3D9] bg-white px-4 py-3 text-[#2D2A26] placeholder:text-[#A39E94] focus:ring-2 focus:ring-[#4A5D4E] focus:outline-none transition"
       />
 
-      <div className="flex flex-wrap gap-2 mt-4">
-        {examples.map((ex) => (
-          <button
-            key={ex.key}
-            onClick={() => applyExample(ex)}
-            data-testid={`example-chip-${ex.key}`}
-            className="px-3.5 py-1.5 rounded-full text-sm bg-[#F5F2EA] text-[#2D2A26] border border-[#E8E3D9] hover:bg-[#D9C5B2]/40 hover:scale-105 transition-all"
-          >
-            {ex.issue}
-          </button>
-        ))}
-      </div>
+      <p className="text-sm text-[#A39E94] mt-3 leading-relaxed" data-testid="topic-hints">
+        Some issues people explore: {TOPIC_HINTS.join(" · ")}. These are only examples — the issue is yours to choose.
+      </p>
 
       <div className="mt-8 space-y-6">
         <Block label="What is your position on this issue?">
