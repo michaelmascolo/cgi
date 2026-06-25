@@ -1,0 +1,40 @@
+{
+  "summary": "Tested Collaborative Democracy Lab full-stack. Backend pytest: 19/19 passing (auth, examples, AI opposing/concerns/needs/solutions, maps CRUD, ownership isolation, unauth 401s). Frontend Playwright: full wizard E2E verified — register, protected-route redirect, starter examples (6), Issue Input with AI opposing-position generation, Position Mapping with suggest-concerns chips, Needs auto-gen + add/remove, Solutions generation (3-5 cards), Reflection, Save, Copy, Download Markdown, Export PDF, Save & Finish navigation, Dashboard saved map, Open map -> reflection with data, Delete map. AI calls (Claude sonnet-4-6 via emergentintegrations) all returned valid structured data within 5-15s.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/auth/register", "issue": "Email is silently lowercased on register/login but not documented in the response shape that mirrors input. Not a bug, just behavior to note for clients."},
+      {"endpoint": "/api/auth/login", "issue": "Brute-force lockout key is per (client.host + email). Behind a proxy/ingress, request.client.host may be the ingress IP — could cause global lockouts under shared NAT. Consider using X-Forwarded-For for the rate-limit key."},
+      {"endpoint": "/api/maps/{map_id}", "issue": "PUT/GET/DELETE do not validate ObjectId format; invalid hex strings would raise bson InvalidId -> 500. Wrap with try/except and return 404."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Reflection", "issues": ["Save & Finish triggers a fresh save even if a prior Save was just clicked — could double-create. Worth disabling Save&Finish if a map id is already set OR using the existing id (currently saveAndFinish always calls save). Confirmed not duplicating because save() uses PUT when map.id exists, but flow could be smoother."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: Harden /api/maps/{map_id} endpoints against invalid ObjectId (currently would 500).",
+    "Optional: Use X-Forwarded-For for login lockout key to avoid shared-IP global lockouts.",
+    "Optional: Disable Save & Finish briefly during save to avoid accidental double-submit on slow networks."
+  ],
+  "critical_code_review_comments": [
+    "server.py auth cookies: samesite='none', secure=True is correct for cross-site cookie usage; verified working with the preview HTTPS domain.",
+    "MongoDB _id is properly excluded via _serialize_map and explicit pop in get_current_user.",
+    "Pydantic models validate AI input shapes; AI endpoints wrap errors in 500 with details — fine for dev, consider sanitizing in prod.",
+    "Bcrypt hashes verified ($2b$ format) and seed_admin uses idempotent update if password changed — passes auth playbook checks.",
+    "CORS: allow_origins is explicit list with FRONTEND_URL — good. allow_credentials=True works.",
+    "No file-size violations. Code is modular (llm.py, examples.py, server.py)."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py", "/app/backend/tests/__init__.py"],
+  "success_rate": {"backend": "100% (19/19)", "frontend": "100% (21/21 across two runs; first run's only fail was test-side timeout, retested OK)"},
+  "test_credentials": "Admin: admin@democracylab.app / DemocracyLab2026! (in /app/memory/test_credentials.md). Also registered test_pw_<ts>@example.com and TEST_iso_*@example.com users for E2E.",
+  "seed_data_creation": "Test users created via /api/auth/register with TEST_/test_ prefix; created and deleted test maps during the run. Admin account is seeded on startup.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend tests live in /app/backend/tests/backend_test.py (pytest, JUnit at /app/test_reports/pytest/pytest_results.xml). AI calls can be slow (5-20s) — use generous timeouts. Note: backend lowercases emails on register; tests must use lowercase comparisons. data-testids are well populated throughout the wizard.",
+  "rca of the issue": "First Playwright run reported 1 'failure' for navigation after finish-button click; root cause was the test using a 10s navigation timeout while the save() call + navigate completed slightly later. Verified working in a focused retest with 20s timeout. No app-side bug."
+}
