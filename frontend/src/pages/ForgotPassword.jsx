@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { KeyRound } from "lucide-react";
 import { useAuth, formatApiError } from "@/context/AuthContext";
 
 export default function ForgotPassword() {
   const { forgotPassword } = useAuth();
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,12 +16,8 @@ export default function ForgotPassword() {
     setError("");
     setLoading(true);
     try {
-      const data = await forgotPassword(email);
-      if (data.reset_token) {
-        navigate(`/reset-password?token=${encodeURIComponent(data.reset_token)}`);
-      } else {
-        setDone(true);
-      }
+      await forgotPassword(email);
+      setDone(true);
     } catch (err) {
       setError(formatApiError(err.response?.data?.detail) || err.message);
     } finally {
@@ -42,8 +37,8 @@ export default function ForgotPassword() {
         </div>
 
         {done ? (
-          <div className="bg-white border border-[#E8E3D9] rounded-2xl p-8 shadow-sm text-center">
-            <p className="text-[#2D2A26]">If an account exists for that email, a reset has been started. Please check and try again.</p>
+          <div className="bg-white border border-[#E8E3D9] rounded-2xl p-8 shadow-sm text-center" data-testid="forgot-done">
+            <p className="text-[#2D2A26]">If an account exists for <span className="font-medium">{email}</span>, we've sent a password reset link. Please check your inbox (and spam folder). The link expires in 1 hour.</p>
             <Link to="/login" className="inline-block mt-5 text-[#4A5D4E] font-medium underline underline-offset-4">Back to sign in</Link>
           </div>
         ) : (

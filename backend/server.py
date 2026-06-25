@@ -19,6 +19,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr, Field
 
 import llm
+import email_service
 from examples import EXAMPLES
 
 # ---------------------------------------------------------------------------
@@ -244,7 +245,7 @@ async def forgot_password(data: ForgotInput):
     user = await db.users.find_one({"email": email})
     if not user:
         # Do not reveal whether an account exists.
-        return {"ok": True, "reset_token": None}
+        return {"ok": True, "email_sent": False}
     token = secrets.token_urlsafe(32)
     await db.password_reset_tokens.insert_one({
         "token": token,
@@ -252,9 +253,11 @@ async def forgot_password(data: ForgotInput):
         "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
         "used": False,
     })
-    logger.info(f"Password reset requested for {email}. Reset token: {token}")
-    # No email service configured, so return the token to drive the reset flow in-app.
-    return {"ok": True, "reset_token": token}
+    reset_url = f"{os.environ.get('FRONTEND_URL', '').rstrip('/')}/reset-password?token={token}"
+    sent = await email_service.send_reset_email(email, reset_url)
+    if not sent:
+        logger.info(f"Email not sent; reset link for {email}: {reset_url}")
+    return {"ok": True, "email_sent": sent}
 
 
 @api_router.post("/auth/reset-password")
